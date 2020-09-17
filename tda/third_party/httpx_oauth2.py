@@ -7,6 +7,7 @@ See here: https://github.com/lepture/authlib/pull/270
 """
 
 import asyncio
+import inspect
 import typing
 from httpx import AsyncClient, Auth, Client, Request, Response
 from httpx._config import UNSET
@@ -116,7 +117,10 @@ class AsyncOAuth2Client(_OAuth2Client, AsyncClient):
                 access_token = self.token['access_token']
                 token = await self.fetch_token(url, grant_type='client_credentials')
                 if self.update_token:
-                    await self.update_token(token, access_token=access_token)
+                    if inspect.iscoroutinefunction(self.update_token):
+                        await self.update_token(token, access_token=access_token)
+                    else:
+                        self.update_token(token, access_token=access_token)
             else:
                 raise InvalidTokenError()
             # Notify coroutines that token is refreshed
@@ -156,7 +160,10 @@ class AsyncOAuth2Client(_OAuth2Client, AsyncClient):
             self.token['refresh_token'] = refresh_token
 
         if self.update_token:
-            await self.update_token(self.token, refresh_token=refresh_token)
+            if inspect.iscoroutinefunction(self.update_token):
+                await self.update_token(self.token, refresh_token=refresh_token)
+            else:
+                self.update_token(self.token, refresh_token=refresh_token)
 
         return self.token
 
