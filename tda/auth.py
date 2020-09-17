@@ -172,8 +172,7 @@ def client_from_login_flow(webdriver, api_key, redirect_url, token_path,
     return client_class(
         api_key,
         session_class(api_key, token=token,
-                      auto_refresh_url='https://api.tdameritrade.com/v1/oauth2/token',
-                      auto_refresh_kwargs={'client_id': api_key},
+                      token_endpoint='https://api.tdameritrade.com/v1/oauth2/token',
                       update_token=update_token))
 
 
@@ -264,8 +263,7 @@ def client_from_access_functions(api_key, token_read_func,
 
     session_kwargs = {
             'token': token,
-            'auto_refresh_url': 'https://api.tdameritrade.com/v1/oauth2/token',
-            'auto_refresh_kwargs': {'client_id': api_key},
+            'token_endpoint': 'https://api.tdameritrade.com/v1/oauth2/token',
     }
 
     if token_write_func is not None:
